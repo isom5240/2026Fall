@@ -1,4 +1,3 @@
-
 # Program title: Storytelling App (using Camera)
 
 # import part
@@ -48,4 +47,3 @@ if uploaded_file is not None:
 
         # Play audio directly using Streamlit
         st.audio(audio_array, sample_rate=sample_rate)
-      
