@@ -1,28 +1,37 @@
-
-
 import streamlit as st
+from transformers import pipeline
 from PIL import Image
-import time
 
-# App title
-st.title("Streamlit Demo on Hugging Face")
+# Load the age classification pipeline directly on script execution
+age_classifier = pipeline("image-classification",
+                          model="nateraw/vit-age-classifier")
 
-# Write some text
-st.write("Welcome to a demo app showcasing basic Streamlit components!")
 
-# File uploader for image and audio
-uploaded_image = st.file_uploader("Upload an image",
-                                  type=["jpg", "jpeg", "png"])
+def classify_age(image):
+    """Classify the age of a person in the given image."""
+    results = age_classifier(image)
 
-# Display image with spinner
-if uploaded_image is not None:
-    with st.spinner("Loading image..."):
-        time.sleep(1)  # Simulate a delay
-        image = Image.open(uploaded_image)
-        # Fixed: use_container_width replaces the deprecated use_column_width
-        st.image(image, caption="Uploaded Image", use_container_width=True)
+    # Sort results by score in descending order
+    results = sorted(results, key=lambda x: x['score'], reverse=True)
 
-# Button interaction
-if st.button("Click Me"):
-    st.write("🎉 You clicked the button!")
+    return results
 
+
+# Streamlit UI
+st.title("Age Classification using ViT")
+
+uploaded_file = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
+
+if uploaded_file is not None:
+    image = Image.open(uploaded_file).convert("RGB")
+    
+    # Fixed: use_container_width replaces the deprecated use_column_width
+    st.image(image, caption="Uploaded Image", use_container_width=True)
+
+    # Classify age
+    st.text('Classifying age...')
+    age_predictions = classify_age(image)
+
+    # Display results
+    st.subheader("Predicted Age Range:")
+    st.write(f"Age range: {age_predictions[0]['label']}")
