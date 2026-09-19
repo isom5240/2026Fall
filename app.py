@@ -1,26 +1,42 @@
+
 import streamlit as st
-from PIL import Image
-import time
+from transformers import pipeline
 
-# App title
-st.title("ISOM5240 Streamlit Demo on Hugging Face")
+# Set up page configuration
+st.set_page_config(
+    page_title="Sentiment Analysis App",
+    page_icon="😊",
+    layout="centered"
+)
 
-# Write some text
-st.write("Welcome to a demo app showcasing basic Streamlit components!")
-st.write("2nd Sentence")
+# Title and description
+st.title("😊 Sentiment Analysis App")
+st.write("Analyze the sentiment of your text using Hugging Face Transformers.")
 
-# File uploader for image and audio
-uploaded_image = st.file_uploader("Upload an image",
-                                  type=["jpg", "jpeg", "png"])
+# Text input area
+default_text = "Deep Learning (DL) represents a highly promising approach to developing applications in Artificial Intelligence (AI)."
+user_input = st.text_area("Enter text to analyze:", value=default_text, height=150)
 
-# Display image with spinner
-if uploaded_image is not None:
-    with st.spinner("Loading image..."):
-        time.sleep(1)  # Simulate a delay
-        image = Image.open(uploaded_image)
-        # Fixed: use_container_width replaces the deprecated use_column_width
-        st.image(image, caption="Uploaded Image", use_container_width=True)
+# Analyze button
+if st.button("Analyze Sentiment", type="primary"):
+    if user_input.strip() == "":
+        st.warning("Please enter some text to analyze.")
+    else:
+        with st.spinner("Analyzing text..."):
+            # Load model directly without caching
+            sentiment_pipeline = pipeline("sentiment-analysis")
+            result = sentiment_pipeline(user_input)[0]
+            
+            label = result["label"]
+            score = result["score"]
 
-# Button interaction
-if st.button("Click Me"):
-    st.write("🎉 You clicked the button!")
+        st.subheader("Result")
+        
+        # Display formatted output based on sentiment
+        if label.upper() == "POSITIVE":
+            st.success(f"**Sentiment:** {label} 🎉")
+        else:
+            st.error(f"**Sentiment:** {label} 🙁")
+            
+        st.metric(label="Confidence Score", value=f"{score:.4f}")
+      
