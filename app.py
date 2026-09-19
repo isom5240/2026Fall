@@ -1,37 +1,37 @@
+
 import streamlit as st
 from transformers import pipeline
-from PIL import Image
 
-# Load the age classification pipeline directly on script execution
-age_classifier = pipeline("image-classification",
-                          model="nateraw/vit-age-classifier")
+# Title and description
+st.title("Sentiment Analysis App")
+st.write("Enter text below to analyze its sentiment using Hugging Face's pipeline.")
 
+# Cache the model pipeline so it doesn't reload on every interaction
+@st.cache_resource
+def load_sentiment_pipeline():
+    return pipeline("sentiment-analysis")
 
-def classify_age(image):
-    """Classify the age of a person in the given image."""
-    results = age_classifier(image)
+sentiment_pipeline = load_sentiment_pipeline()
 
-    # Sort results by score in descending order
-    results = sorted(results, key=lambda x: x['score'], reverse=True)
+# User input text area
+text_input = st.text_area(
+    "Input Text",
+    value="Deep Learning (DL) represents a highly promising approach to developing applications in Artificial Intelligence (AI).",
+    height=150
+)
 
-    return results
-
-
-# Streamlit UI
-st.title("Age Classification using ViT")
-
-uploaded_file = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
-
-if uploaded_file is not None:
-    image = Image.open(uploaded_file).convert("RGB")
-    
-    # Fixed: use_container_width replaces the deprecated use_column_width
-    st.image(image, caption="Uploaded Image", use_container_width=True)
-
-    # Classify age
-    st.text('Classifying age...')
-    age_predictions = classify_age(image)
-
-    # Display results
-    st.subheader("Predicted Age Range:")
-    st.write(f"Age range: {age_predictions[0]['label']}")
+# Analyze button
+if st.button("Analyze Sentiment"):
+    if text_input.strip():
+        result = sentiment_pipeline(text_input)
+        label = result[0]["label"]
+        score = result[0]["score"]
+        
+        # Display results with metrics
+        st.subheader("Result")
+        col1, col2 = st.columns(2)
+        col1.metric("Sentiment", label)
+        col2.metric("Confidence Score", f"{score:.4f}")
+    else:
+        st.warning("Please enter some text to analyze.")
+      
