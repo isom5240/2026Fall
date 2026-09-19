@@ -15,12 +15,14 @@ st.set_page_config(
 )
 
 # Title and description
-st.title("😊 Hugging Face: Sentiment Analysis App")
-st.write("Analyze the sentiment of your text using Hugging Face Transformers.")
+st.title("😊 Hugging Face")
+st.title("😊 Sentiment Analysis App")
+st.write("Analyze the sentiment of your text")
+st.write("using Hugging Face Transformers.")
 
 # Text input area
 default_text = "Deep Learning (DL) represents a highly promising approach to developing applications in Artificial Intelligence (AI)."
-user_input = st.text_area("Enter text to analyze:", value=default_text, height=150)
+user_input = st.text_area("Enter text to analyze:", value=default_text, height=350)
 
 # Analyze button
 if st.button("Analyze Sentiment", type="primary"):
