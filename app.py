@@ -1,10 +1,15 @@
 
+# import part
 import streamlit as st
 from transformers import pipeline
 
+# function part
+
+
+# main part
 # Set up page configuration
 st.set_page_config(
-    page_title="Sentiment Analysis App",
+    page_title="ISOM5240: Sentiment Analysis App",
     page_icon="😊",
     layout="centered"
 )
