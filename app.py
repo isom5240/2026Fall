@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # Title and description
-st.title("😊 Sentiment Analysis App")
+st.title("😊 Hugging Face: Sentiment Analysis App")
 st.write("Analyze the sentiment of your text using Hugging Face Transformers.")
 
 # Text input area
