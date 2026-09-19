@@ -1,37 +1,25 @@
-
 import streamlit as st
-from transformers import pipeline
+from PIL import Image
+import time
 
-# Title and description
-st.title("Sentiment Analysis App")
-st.write("Enter text below to analyze its sentiment using Hugging Face's pipeline.")
+# App title
+st.title("Streamlit Demo on Hugging Face")
 
-# Cache the model pipeline so it doesn't reload on every interaction
-@st.cache_resource
-def load_sentiment_pipeline():
-    return pipeline("sentiment-analysis")
+# Write some text
+st.write("Welcome to a demo app showcasing basic Streamlit components!")
 
-sentiment_pipeline = load_sentiment_pipeline()
+# File uploader for image and audio
+uploaded_image = st.file_uploader("Upload an image",
+                                  type=["jpg", "jpeg", "png"])
 
-# User input text area
-text_input = st.text_area(
-    "Input Text",
-    value="Deep Learning (DL) represents a highly promising approach to developing applications in Artificial Intelligence (AI).",
-    height=150
-)
+# Display image with spinner
+if uploaded_image is not None:
+    with st.spinner("Loading image..."):
+        time.sleep(1)  # Simulate a delay
+        image = Image.open(uploaded_image)
+        # Fixed: use_container_width replaces the deprecated use_column_width
+        st.image(image, caption="Uploaded Image", use_container_width=True)
 
-# Analyze button
-if st.button("Analyze Sentiment"):
-    if text_input.strip():
-        result = sentiment_pipeline(text_input)
-        label = result[0]["label"]
-        score = result[0]["score"]
-        
-        # Display results with metrics
-        st.subheader("Result")
-        col1, col2 = st.columns(2)
-        col1.metric("Sentiment", label)
-        col2.metric("Confidence Score", f"{score:.4f}")
-    else:
-        st.warning("Please enter some text to analyze.")
-      
+# Button interaction
+if st.button("Click Me"):
+    st.write("🎉 You clicked the button!")
