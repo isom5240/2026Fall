@@ -2,58 +2,26 @@
 
 import streamlit as st
 from PIL import Image
-from transformers import pipeline
+import time
 
-# Recommended efficient model for fast, accurate image captioning
-MODEL_NAME = "Salesforce/blip-image-captioning-base"
+# App title
+st.title("Streamlit Demo on Hugging Face")
 
+# Write some text
+st.write("Welcome to a demo app showcasing basic Streamlit components!")
 
-def load_captioning_pipeline():
-    """Loads and initializes the Hugging Face image-to-text pipeline."""
-    return pipeline("image-to-text", model=MODEL_NAME)
+# File uploader for image and audio
+uploaded_image = st.file_uploader("Upload an image",
+                                  type=["jpg", "jpeg", "png"])
 
-
-def generate_description(image, captioner):
-    """Generates a brief text description from an input PIL image."""
-    result = captioner(image)
-    return result[0]["generated_text"]
-
-
-def main():
-    st.set_page_config(
-        page_title="Image Description Generator",
-        page_icon="🖼️",
-        layout="centered",
-    )
-
-    st.title("🖼️ Image-to-Text Web App")
-    st.write(
-        "Upload an image to generate a brief, automated description using Hugging Face Transformers."
-    )
-
-    # File uploader widget for images
-    uploaded_file = st.file_uploader(
-        "Choose an image...", type=["jpg", "jpeg", "png", "webp"]
-    )
-
-    if uploaded_file is not None:
-        image = Image.open(uploaded_file).convert("RGB")
-
-        # Display uploaded image preview
+# Display image with spinner
+if uploaded_image is not None:
+    with st.spinner("Loading image..."):
+        time.sleep(1)  # Simulate a delay
+        image = Image.open(uploaded_image)
+        # Fixed: use_container_width replaces the deprecated use_column_width
         st.image(image, caption="Uploaded Image", use_container_width=True)
 
-        # Generate Description Button
-        if st.button("Describe Image", type="primary"):
-            with st.spinner(
-                "Loading model and generating description (this may take a few seconds on first run)..."
-            ):
-                captioner = load_captioning_pipeline()
-                description = generate_description(image, captioner)
-
-            st.subheader("Generated Description")
-            st.success(description.capitalize())
-
-
-if __name__ == "__main__":
-    main()
-    
+# Button interaction
+if st.button("Click Me"):
+    st.write("🎉 You clicked the button!")
