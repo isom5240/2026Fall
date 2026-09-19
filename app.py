@@ -7,6 +7,7 @@ st.title("ISOM5240 Streamlit Demo on Hugging Face")
 
 # Write some text
 st.write("Welcome to a demo app showcasing basic Streamlit components!")
+st.write("2nd Sentence")
 
 # File uploader for image and audio
 uploaded_image = st.file_uploader("Upload an image",
