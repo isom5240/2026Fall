@@ -3,7 +3,7 @@ from PIL import Image
 import time
 
 # App title
-st.title("Streamlit Demo on Hugging Face")
+st.title("ISOM5240 Streamlit Demo on Hugging Face")
 
 # Write some text
 st.write("Welcome to a demo app showcasing basic Streamlit components!")
