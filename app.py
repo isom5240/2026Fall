@@ -1,59 +1,59 @@
 
-# import part
+
 import streamlit as st
+from PIL import Image
 from transformers import pipeline
 
-# Specify the model name explicitly
-MODEL_NAME = "distilbert/distilbert-base-uncased-finetuned-sst-2-english"
+# Recommended efficient model for fast, accurate image captioning
+MODEL_NAME = "Salesforce/blip-image-captioning-base"
 
-# function part
-def analyze_sentiment(text):
-    """Loads the pipeline and predicts sentiment for the provided text."""
-    sentiment_pipeline = pipeline("sentiment-analysis", model=MODEL_NAME)
-    results = sentiment_pipeline(text)
-    return results[0]
 
-def display_results(label, score):
-    """Displays the sentiment prediction and confidence score in Streamlit UI."""
-    st.subheader("Result")
-    
-    if label.upper() == "POSITIVE":
-        st.success(f"**Sentiment:** {label} 🎉")
-    else:
-        st.error(f"**Sentiment:** {label} 🙁")
-        
-    st.metric(label="Confidence Score", value=f"{score:.4f}")
+def load_captioning_pipeline():
+    """Loads and initializes the Hugging Face image-to-text pipeline."""
+    return pipeline("image-to-text", model=MODEL_NAME)
 
-# main part
+
+def generate_description(image, captioner):
+    """Generates a brief text description from an input PIL image."""
+    result = captioner(image)
+    return result[0]["generated_text"]
+
+
 def main():
-    # Set up page configuration
     st.set_page_config(
-        page_title="ISOM5240: Sentiment Analysis App",
-        page_icon="😊",
-        layout="centered"
+        page_title="Image Description Generator",
+        page_icon="🖼️",
+        layout="centered",
     )
 
-    # Title and description
-    st.title("😊 Hugging Face")
-    st.title("😊 Sentiment Analysis App")
-    st.write("Analyze the sentiment of your text")
-    st.write("using Hugging Face Transformers.")
+    st.title("🖼️ Image-to-Text Web App")
+    st.write(
+        "Upload an image to generate a brief, automated description using Hugging Face Transformers."
+    )
 
-    # Text input area
-    default_text = "Deep Learning (DL) represents a highly promising approach to developing applications in Artificial Intelligence (AI)."
-    user_input = st.text_area("Enter text to analyze:", value=default_text, height=350)
+    # File uploader widget for images
+    uploaded_file = st.file_uploader(
+        "Choose an image...", type=["jpg", "jpeg", "png", "webp"]
+    )
 
-    # Analyze button
-    if st.button("Analyze Sentiment", type="primary"):
-        if user_input.strip() == "":
-            st.warning("Please enter some text to analyze.")
-        else:
-            with st.spinner("Analyzing text..."):
-                result = analyze_sentiment(user_input)
-                label = result["label"]
-                score = result["score"]
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file).convert("RGB")
 
-            display_results(label, score)
+        # Display uploaded image preview
+        st.image(image, caption="Uploaded Image", use_container_width=True)
+
+        # Generate Description Button
+        if st.button("Describe Image", type="primary"):
+            with st.spinner(
+                "Loading model and generating description (this may take a few seconds on first run)..."
+            ):
+                captioner = load_captioning_pipeline()
+                description = generate_description(image, captioner)
+
+            st.subheader("Generated Description")
+            st.success(description.capitalize())
+
 
 if __name__ == "__main__":
     main()
+    
