@@ -1,27 +1,35 @@
-
-# import part
 import streamlit as st
-from PIL import Image    # for images
-import time              # for time
+from transformers import pipeline
+from transformers import AutoModelForSequenceClassification
+from transformers import AutoTokenizer
+import torch
+import numpy as np
 
-# App title
-st.title("Streamlit Demo on Hugging Face")
+def main():
 
-# Write some text
-st.write("Welcome to a demo app showcasing basic Streamlit components!")
 
-# File uploader for image and audio
-uploaded_image = st.file_uploader("Upload an image",
-                                  type=["jpg", "jpeg", "png"])
+    st.title("yelp2024fall Test")
+    st.write("Enter a sentence for analysis:")
 
-# Display image with spinner
-if uploaded_image is not None:
-    with st.spinner("Loading image..."):
-        time.sleep(5)  # Simulate a delay - delay 1 s
-        image = Image.open(uploaded_image)
-        # Fixed: use_container_width replaces the deprecated use_column_width
-        st.image(image, caption="Uploaded Image", use_container_width=True)
+    user_input = st.text_input("")
+    if user_input:
+        # Approach: AutoModel
+        model2 = AutoModelForSequenceClassification.from_pretrained("isom5240/CustomModel_yelp2025L1",
+                                                                    num_labels=5)
+        tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 
-# Button interaction
-if st.button("Click Me"):
-    st.write("🎉 You clicked the button!")
+        inputs = tokenizer(user_input,
+                        padding=True,
+                        truncation=True,
+                        return_tensors='pt')
+
+        outputs = model2(**inputs)
+        predictions = torch.nn.functional.softmax(outputs.logits, dim=-1)
+        predictions = predictions.cpu().detach().numpy()
+        # Get the index of the largest output value
+        max_index = np.argmax(predictions)
+        st.write(f"result (AutoModel) - Label: {max_index}")
+
+
+if __name__ == "__main__":
+    main()
